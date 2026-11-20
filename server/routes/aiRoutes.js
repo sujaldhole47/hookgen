@@ -2,6 +2,14 @@ import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import protect from "../middleware/authMiddleware.js";
 
+const withTimeout = (promise, ms = 20000) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Gemini timed out after ${ms / 1000}s`)), ms)
+    ),
+  ]);
+
 const router = express.Router();
 
 router.post('/generate', protect, async (req, res)=>{
@@ -44,41 +52,39 @@ router.post('/generate', protect, async (req, res)=>{
           { "caption": "5. Classic Step Cut", "query": "indian woman long layered hair" }
         ]
       }`;
-      const models = ['gemini-3.8-flash', 'gemini-2.5-flash'];
-    let response;
-    let lastError;
-    const maxRetries = 3;
+      const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash'];
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        response = await ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
-          config: {
-            responseMimeType: 'application/json',
-          },
-        });
-        break; // Success
-      } catch (err) {
-        const isRetryable =
-          err.status === 503 ||
-          err.message?.includes('fetch failed') ||
-          err.cause?.code === 'UND_ERR_SOCKET';
+for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  try {
+    const currentModel = models[attempt - 1] || 'gemini-2.5-flash';
+    console.log(`Calling ${currentModel} (Attempt ${attempt}/${maxRetries})...`);
 
-        if (isRetryable && attempt < maxRetries) {
-          const delayMs = attempt * 1500;
-          console.warn(`Temporary network/API error. Retrying in ${delayMs / 1000}s (Attempt ${attempt}/${maxRetries})...`);
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
-          continue;
-        }
-        if (err.status === 503) {
-          return res.status(503).json({
-            message: 'Gemini servers are currently busy. Please wait a few seconds and try again.',
-          });
-        }
-        throw err;
-      }
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: currentModel,
+        contents: prompt,
+      }),
+      20000
+    );
+
+    // ...keep your existing JSON parsing code here...
+    break;
+  } catch (err) {
+    console.error(`Attempt ${attempt} failed:`, err.status || '', err.message, err.cause?.code || '');
+
+    const isRetryable =
+      err.status === 503 ||
+      err.message?.includes('fetch failed') ||
+      err.message?.includes('timed out') ||
+      err.cause?.code === 'UND_ERR_SOCKET';
+
+    if (isRetryable && attempt < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+      continue;
     }
+    throw err;
+  }
+}
 
 
     if (!response) {
