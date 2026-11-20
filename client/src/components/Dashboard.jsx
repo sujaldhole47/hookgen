@@ -223,7 +223,7 @@ const fetchVideos = async () => {
                 key={column}
                 onDragOver={onDragOver}
                 onDrop={(e) => onDrop(e, column)}
-                className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 min-h-420 flex flex-col"
+                className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 lg:min-h-[420px] flex flex-col"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold text-sm text-slate-200">
