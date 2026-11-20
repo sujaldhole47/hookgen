@@ -54,7 +54,7 @@ router.post('/generate', protect, async (req, res)=>{
       }`;
       let response;
       const maxRetries = 2;
-const models = ['gemini-3.5-flash', 'gemini-3.1-flash-lite-image'];
+const models = ['gemini-3.5-flash', 'gemini-3.8-flash'];
 
 for (let attempt = 1; attempt <= maxRetries; attempt++) {
   try {
