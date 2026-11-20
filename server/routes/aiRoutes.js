@@ -53,11 +53,11 @@ router.post('/generate', protect, async (req, res)=>{
         ]
       }`;
       const maxRetries = 3;
-      const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash'];
+const models = ['gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash'];
 
 for (let attempt = 1; attempt <= maxRetries; attempt++) {
   try {
-    const currentModel = models[attempt - 1] || 'gemini-2.5-flash';
+    const currentModel = models[attempt - 1] || 'gemini-3.8-flash';
     console.log(`Calling ${currentModel} (Attempt ${attempt}/${maxRetries})...`);
 
     const response = await withTimeout(
