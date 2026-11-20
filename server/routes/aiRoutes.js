@@ -52,21 +52,23 @@ router.post('/generate', protect, async (req, res)=>{
           { "caption": "5. Classic Step Cut", "query": "indian woman long layered hair" }
         ]
       }`;
+      let response;
       const maxRetries = 3;
-const models = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash'];
+const models = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.8-flash'];
 
 for (let attempt = 1; attempt <= maxRetries; attempt++) {
   try {
     const currentModel = models[attempt - 1] || 'gemini-3.8-flash';
     console.log(`Calling ${currentModel} (Attempt ${attempt}/${maxRetries})...`);
 
-    const response = await withTimeout(
+    response = await withTimeout(
       ai.models.generateContent({
         model: currentModel,
         contents: prompt,
       }),
       20000
     );
+
 
     // ...keep your existing JSON parsing code here...
     break;
