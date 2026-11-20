@@ -53,7 +53,7 @@ router.post('/generate', protect, async (req, res)=>{
         ]
       }`;
       const maxRetries = 3;
-const models = ['gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash'];
+const models = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash'];
 
 for (let attempt = 1; attempt <= maxRetries; attempt++) {
   try {
