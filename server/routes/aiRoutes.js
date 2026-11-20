@@ -52,6 +52,7 @@ router.post('/generate', protect, async (req, res)=>{
           { "caption": "5. Classic Step Cut", "query": "indian woman long layered hair" }
         ]
       }`;
+      const maxRetries = 3;
       const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash'];
 
 for (let attempt = 1; attempt <= maxRetries; attempt++) {
